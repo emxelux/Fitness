@@ -47,7 +47,7 @@ try:
         st.write('Fill in the details of your activity below:')
         
         with st.form('activity_form'):
-            name = st.text_input('Enter your name(Remember the name you use to log this activity)')
+            name = st.text_input('Enter your name (Remember the name you use to log this activity)')
             activity_type = st.selectbox('Activity Type', ['Running', 'Cycling', 'Swimming', 'Walking'])
             duration = st.number_input('Duration (in minutes)', min_value=0.0, step=0.1)
             distance = st.number_input('Distance (in km)', min_value=0.0, step=0.1)
@@ -78,16 +78,29 @@ try:
         df = pd.DataFrame(all_data)
         st.dataframe(df)
         st.divider()
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3, gap = 'large')
         with col1:
-            st.subheader('Charts by distances')
-            #st.bar_chart(hello)
+            st.subheader('Charts by Distances')
+            st.bar_chart(df.groupby('Name')['Distance'].sum().sort_values(ascending=True))
 
-        st.subheader('Want to Check your status and your stats')
-        # user = st.selectbox('Enter your name', options= list(df['Name'].unique()))
-        # if user:
-        #     df[df['Name'] == user]
-            
+
+
+        with col2:
+            pass
+
+        with col3:
+            st.subheader('Charts by Duration')
+            st.bar_chart(df.groupby('Name')['Duration'].sum())
+
+        st.header('Check your Ranking Below')
+        st.info('⚠ Disclaimer!!! No real verification of user\'s input on this site. And ranking is based on Distance and Duratrion alone ⚠')
+        score = (df['Distance']/df['Duration']).round(2) * 100
+        df['Score'] = score
+        ranking = df.groupby('Name')['Score'].mean().reset_index().sort_values(by= 'Score', ascending=True)
+        ranking['Rank'] = ranking['Score'].rank(method='min', ascending=False).astype(int)
+        ranking = ranking.sort_values(by='Rank', ascending=False)
+        rank_table = pd.DataFrame(ranking)
+        st.dataframe(rank_table)
 
 
     if options == 'HomePage':
