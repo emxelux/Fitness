@@ -20,25 +20,25 @@ try:
         st.markdown(f'''Copyright &copy; 2025. All right reserved. You visited on  ({date.today()})''')
 
         with img1:
-            st.image('images\cardio1.jpg', caption='Track your fitness journey') 
+            st.image('images/cardio1.jpg', caption='Track your fitness journey') 
             '\n'
-            st.image('images\cardio2.jpg', caption = 'We offer you free service')
+            st.image('images/cardio2.jpg', caption = 'We offer you free service')
             '\n'
-            st.image('images\cardio3.jpg', caption = 'Workout is good for your health')
+            st.image('images/cardio3.jpg', caption = 'Workout is good for your health')
 
         with img2:
-            st.image('images\\fit1.jpg', caption = 'Get fit with us')
+            st.image('images/fit1.jpg', caption = 'Get fit with us')
             '\n'
-            st.image('images\\fit2.jpg', caption = 'We are here to help you')
+            st.image('images/fit2.jpg', caption = 'We are here to help you')
             '\n'
-            st.image('images\\fit3.jpg', caption = 'We are here to help you achieve your fitness goals')
+            st.image('images/fit3.jpg', caption = 'We are here to help you achieve your fitness goals')
 
         with img3:
-            st.image('images\sport1.jpg', caption = 'Kid playing pool')
+            st.image('images/sport1.jpg', caption = 'Kid playing pool')
             '\n'
-            st.image('images\sport2.jpg', caption = 'We are here to help you get fit')
+            st.image('images/sport2.jpg', caption = 'We are here to help you get fit')
             '\n'
-            st.image('images\sport3.jpg', caption = 'Help yourself to grow')
+            st.image('images/sport3.jpg', caption = 'Help yourself to grow')
 
             st.divider()
     
@@ -111,4 +111,5 @@ try:
         stats()
 
 except sq.Error as e: 
+
     st.error(f'There is an error: {e}')
