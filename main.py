@@ -16,7 +16,7 @@ page_bg_img = """
 .stApp {
     background: 
         linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-        url("images//image1.jpg");
+        url("images//fit3.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -160,4 +160,5 @@ elif options == '📝 Log Activities':
     log_activities()
 elif options == '📊 Stats':
     stats()
+
 
