@@ -4,112 +4,202 @@ from datetime import date
 import sqlite3 as sq
 import streamlit as st
 
-st.set_page_config(page_title="Activity Tracker", page_icon=":running:", layout="wide")
+# ======================== PAGE CONFIG ========================
+st.set_page_config(page_title="EMXEFIT Activity Tracker", 
+                   page_icon="🏋️", 
+                   layout="wide")
+
+# ======================== DB CONNECTION ======================
 conn = sq.connect('database.db')
 cur = conn.cursor()
 
-try:
-    options = st.sidebar.radio('Choose one', options = ['HomePage', 'Log Activities', 'Stats'])
-    
-    def home_page():
-        st.title('✅ WELCOME TO EMXEFIT✅')
-        st.write(f'''Track your fitness journey and stay motivated every step of the way. Log in to see your progress, set goals, and crush them''')
-        '\n'
-        st.badge('Below are some stunning fitness activity images to get you motivated')
-        img1, img2, img3 = st.columns(3)
-        st.markdown(f'''Copyright &copy; 2025. All right reserved. You visited on  ({date.today()})''')
+# ======================== CUSTOM STYLING =====================
+page_bg_img = """
+<style>
+/* Main app background with frosted blur effect */
+.stApp {
+    background: 
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("https://images.unsplash.com/photo-1554284126-aa88f22d8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
 
-        with img1:
-            st.image('images/cardio1.jpg', caption='Track your fitness journey') 
-            '\n'
-            st.image('images/cardio2.jpg', caption = 'We offer you free service')
-            '\n'
-            st.image('images/cardio3.jpg', caption = 'Workout is good for your health')
+/* Add frosted-glass blur to main container */
+[data-testid="stAppViewContainer"] {
+    backdrop-filter: blur(6px);
+}
 
-        with img2:
-            st.image('images/fit1.jpg', caption = 'Get fit with us')
-            '\n'
-            st.image('images/fit2.jpg', caption = 'We are here to help you')
-            '\n'
-            st.image('images/fit3.jpg', caption = 'We are here to help you achieve your fitness goals')
+/* Header */
+[data-testid="stHeader"] {
+    background: rgba(0,0,0,0) !important;
+}
 
-        with img3:
-            st.image('images/sport1.jpg', caption = 'Kid playing pool')
-            '\n'
-            st.image('images/sport2.jpg', caption = 'We are here to help you get fit')
-            '\n'
-            st.image('images/sport3.jpg', caption = 'Help yourself to grow')
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: rgba(30, 30, 30, 0.75) !important;
+    border-radius: 12px;
+    padding: 1rem;
+    backdrop-filter: blur(6px);
+}
 
-            st.divider()
-    
-    def log_activities():
-        st.title('Log Your Activities')
-        st.write('Fill in the details of your activity below:')
-        
-        with st.form('activity_form'):
-            name = st.text_input('Enter your name (Remember the name you use to log this activity)')
-            activity_type = st.selectbox('Activity Type', ['Running', 'Cycling', 'Swimming', 'Walking'])
-            duration = st.number_input('Duration (in minutes)', min_value=0.0, step=0.1)
-            distance = st.number_input('Distance (in km)', min_value=0.0, step=0.1)
-            d_date = st.date_input('Date', value=date.today())
-            submit_button = st.form_submit_button(label='Log Activity')
-            
-            if submit_button:
-                cur.execute('INSERT INTO activities(name, activity_type, duration, distance, date) VALUES (?, ?, ?, ?, ?)', 
-                            (name, activity_type, duration, distance, d_date))
-                conn.commit()
-                st.success('Activity logged successfully!')
-                st.balloons()
-    
-    def stats():
-        st.title('Activity Statistics')
-        cur.execute('SELECT * FROM activities')
-        activities = cur.fetchall()
-        
-        if not activities:
-            st.write('No activities logged yet.')
-            return
-        
-        st.write('Here are your logged activities:')
-        all_data = []
-        for activity in activities:
-            act = {'Name': activity[1], 'Type': activity[2], 'Duration': activity[3], 'Distance': activity[4], 'Date': activity[5]}
-            all_data.append(act)
-        df = pd.DataFrame(all_data)
-        st.dataframe(df)
-        st.divider()
-        col1, col2, col3 = st.columns(3, gap = 'large')
-        with col1:
-            st.subheader('Charts by Distances')
-            st.bar_chart(df.groupby('Name')['Distance'].sum().sort_values(ascending=True))
+/* Headings */
+h1, h2, h3, h4, h5 {
+    color: #ffffff !important;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* Text */
+p, label, .stMarkdown, .stText, .stSelectbox, .stDataFrame {
+    color: #f1f1f1 !important;
+}
+
+/* Buttons */
+.stButton button {
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6f61, #ff9966);
+    color: white;
+    font-size: 16px;
+    padding: 0.6rem 1.2rem;
+    border: none;
+}
+.stButton button:hover {
+    background: linear-gradient(135deg, #e85c50, #ff784e);
+}
+
+/* Metrics */
+[data-testid="stMetricLabel"] {
+    color: #e6e6e6 !important;
+}
+[data-testid="stMetricValue"] {
+    color: #00ffcc !important;
+}
+</style>
+"""
+st.markdown(page_bg_img, unsafe_allow_html=True)
+
+# ======================== SIDEBAR NAV ========================
+options = st.sidebar.radio('📌 Navigation', 
+                           options=['🏠 HomePage', '📝 Log Activities', '📊 Stats'])
 
 
+# ======================== PAGES ==============================
+def home_page():
+    st.markdown("<h1 style='text-align:center;'>✅ WELCOME TO EMXEFIT ✅</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center;'>Your Personal Fitness Companion</h3>", unsafe_allow_html=True)
+    st.markdown("---")
 
-        with col2:
-            pass
+    col1, col2 = st.columns([2,1], gap="large")
 
-        with col3:
-            st.subheader('Charts by Duration')
-            st.bar_chart(df.groupby('Name')['Duration'].sum())
+    with col1:
+        st.markdown("""
+        ### 🚀 Why EMXEFIT?
+        - 📈 **Track** all your workouts and visualize progress
+        - 🎯 **Set goals** and achieve them step by step
+        - 🏆 **Compete** with friends via rankings
+        - 💡 **Stay motivated** with insights & streaks
+        """)
+        st.success("💪 Start logging your activities today and transform your fitness journey!")
 
-        st.header('Check your Ranking Below')
-        st.info('⚠ Disclaimer!!! No real verification of user\'s input on this site. And ranking is based on Distance and Duratrion alone ⚠')
-        score = (df['Distance']/df['Duration']).round(2) * 100
-        df['Score'] = score
-        ranking = df.groupby('Name')['Score'].mean().reset_index().sort_values(by= 'Score', ascending=True)
-        ranking['Rank'] = ranking['Score'].rank(method='min', ascending=False).astype(int)
-        ranking = ranking.sort_values(by='Rank', ascending=False)
-        rank_table = pd.DataFrame(ranking)
-        st.dataframe(rank_table)
+    with col2:
+        st.image("https://images.unsplash.com/photo-1594737625785-c8cb9fcf8f55?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                 caption="Stay Fit. Stay Strong.", use_container_width=True)
+
+    st.divider()
+    st.markdown(f"<p style='text-align:center; color:#d9d9d9;'>© 2025 EMXEFIT | All Rights Reserved | Visited on {date.today()}</p>", unsafe_allow_html=True)
 
 
-    if options == 'HomePage':
-        home_page()
-    elif options == 'Log Activities':
-        log_activities()
-    elif options == 'Stats':
-        stats()
+def log_activities():
+    st.markdown("<h1>📝 Log Your Activities</h1>", unsafe_allow_html=True)
+    st.write("Fill in the details of your activity below:")
 
-except sq.Error as e: 
+    with st.form('activity_form'):
+        name = st.text_input('Enter your name (This will be used to track your logs)')
+        activity_type = st.selectbox('Activity Type', ['Running', 'Cycling', 'Swimming', 'Walking'])
+        duration = st.number_input('Duration (in minutes)', min_value=0.0, step=0.1)
+        distance = st.number_input('Distance (in km)', min_value=0.0, step=0.1)
+        d_date = st.date_input('Date', value=date.today())
+        submit_button = st.form_submit_button(label='✅ Log Activity')
 
-    st.error(f'There is an error: {e}')
+        if submit_button:
+            cur.execute(
+                'INSERT INTO activities(name, activity_type, duration, distance, date) VALUES (?, ?, ?, ?, ?)', 
+                (name, activity_type, duration, distance, d_date)
+            )
+            conn.commit()
+            st.success('✅ Activity logged successfully!')
+            st.balloons()
+
+
+def stats():
+    st.markdown("<h1>📊 Activity Statistics</h1>", unsafe_allow_html=True)
+    cur.execute('SELECT * FROM activities')
+    activities = cur.fetchall()
+
+    if not activities:
+        st.warning('⚠ No activities logged yet.')
+        return
+
+    all_data = []
+    for activity in activities:
+        act = {
+            'Name': activity[1], 
+            'Type': activity[2], 
+            'Duration': activity[3], 
+            'Distance': activity[4], 
+            'Date': activity[5]
+        }
+        all_data.append(act)
+    df = pd.DataFrame(all_data)
+
+    # Summary cards
+    total_distance = df['Distance'].sum()
+    total_duration = df['Duration'].sum()
+    unique_users = df['Name'].nunique()
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("🌍 Total Distance (km)", f"{total_distance:.1f}")
+    c2.metric("⏱ Total Duration (min)", f"{total_duration:.1f}")
+    c3.metric("👥 Active Users", unique_users)
+
+    st.divider()
+    st.dataframe(df, use_container_width=True)
+
+    st.divider()
+    col1, col2, col3 = st.columns(3, gap='large')
+    with col1:
+        st.subheader('🏃 Top Distances by User')
+        st.bar_chart(df.groupby('Name')['Distance'].sum().sort_values(ascending=True).head(10))
+
+    with col2:
+        st.subheader('👤 View Your Stats')
+        name = st.text_input('Enter your name')
+        if st.button('🔍 View'):
+            st.line_chart(df[df['Name'] == name].set_index('Date')[['Distance','Duration']])
+
+    with col3:
+        st.subheader('⏱ Top Durations by User')
+        st.bar_chart(df.groupby('Name')['Duration'].sum().head(10))
+
+    st.divider()
+    st.header('🏆 Ranking')
+    st.info('⚠ Disclaimer: Ranking is based on Distance and Duration only, no real verification.')
+
+    score = (df['Distance'] / df['Duration']).round(2) * 100
+    df['Score'] = score
+    ranking = df.groupby('Name')['Score'].mean().reset_index().sort_values(by='Score', ascending=True)
+    ranking['Rank'] = ranking['Score'].rank(method='min', ascending=False).astype(int)
+    ranking = ranking.sort_values(by='Rank', ascending=False)
+
+    st.dataframe(ranking, use_container_width=True)
+
+
+# ======================== ROUTER =============================
+if options == '🏠 HomePage':
+    home_page()
+elif options == '📝 Log Activities':
+    log_activities()
+elif options == '📊 Stats':
+    stats()
