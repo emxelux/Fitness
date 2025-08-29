@@ -16,7 +16,7 @@ page_bg_img = """
 .stApp {
     background: 
         linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-        url("https://raw.githubusercontent.com/emxelux/emxelux/main/uuuu.jpg");
+        url("images//image1.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -160,3 +160,4 @@ elif options == '📝 Log Activities':
     log_activities()
 elif options == '📊 Stats':
     stats()
+
